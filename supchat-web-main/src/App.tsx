@@ -1,6 +1,7 @@
 import { routes } from "./constants/variables";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/dashboard";
+import WorkspacesPage from "./pages/workspaces";
 import Login from "./pages/auth/login";
 import SignUp from "./pages/auth/signup";
 import ProtectedRoutes from "./component/protectedRoutes";
@@ -17,6 +18,14 @@ function App() {
             </ProtectedRoutes>
           }
           path={routes.dashboard}
+        />
+        <Route
+          element={
+            <ProtectedRoutes>
+              <WorkspacesPage />
+            </ProtectedRoutes>
+          }
+          path={routes.workspaces}
         />
 
         <Route
