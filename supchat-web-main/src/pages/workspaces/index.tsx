@@ -7,10 +7,13 @@ import {
   useCreateChannelMutation,
   useLazyGetWorkspaceChannelsQuery,
 } from "../../redux/apis/channel";
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
 import {
   useSendMessageMutation,
   useLazyGetChannelMessagesQuery,
 } from "../../redux/apis/message";
+
+main
 
 const WorkspacesPage = () => {
   const [workspaceName, setWorkspaceName] = useState("");
@@ -19,16 +22,22 @@ const WorkspacesPage = () => {
   const [channelName, setChannelName] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [channels, setChannels] = useState<any[]>([]);
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
   const [selectedChannel, setSelectedChannel] = useState<string>("");
   const [channelMessages, setChannelMessages] = useState<any[]>([]);
   const [messageText, setMessageText] = useState("");
+
+main
 
   const [createWorkspace] = useCreateWorkspaceMutation();
   const [fetchWorkspaces] = useLazyGetWorkspacesQuery();
   const [createChannel] = useCreateChannelMutation();
   const [fetchChannels] = useLazyGetWorkspaceChannelsQuery();
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
   const [sendMessage] = useSendMessageMutation();
   const [fetchChannelMessages] = useLazyGetChannelMessagesQuery();
+
+main
 
   const loadWorkspaces = async () => {
     try {
@@ -48,6 +57,7 @@ const WorkspacesPage = () => {
     }
   };
 
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
   const loadMessages = async (channelId: string) => {
     try {
       const res = await fetchChannelMessages({ channelId }).unwrap();
@@ -57,6 +67,8 @@ const WorkspacesPage = () => {
     }
   };
 
+
+main
   useEffect(() => {
     loadWorkspaces();
   }, []);
@@ -79,6 +91,7 @@ const WorkspacesPage = () => {
     loadChannels(selectedWs);
   };
 
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
   const handleSendMessage = async () => {
     if (!messageText.trim() || !selectedChannel) return;
     try {
@@ -93,6 +106,8 @@ const WorkspacesPage = () => {
     }
   };
 
+
+main
   return (
     <div style={{ padding: "1rem" }}>
       <h2>Workspaces</h2>
@@ -142,6 +157,7 @@ const WorkspacesPage = () => {
           <ul>
             {channels.map((ch) => (
               <li key={ch._id}>
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
                 <span
                   style={{ cursor: "pointer" }}
                   onClick={() => {
@@ -176,6 +192,12 @@ const WorkspacesPage = () => {
               </div>
             </div>
           )}
+
+                {ch.name} {ch.isPrivate ? "(Private)" : "(Public)"}
+              </li>
+            ))}
+          </ul>
+main
         </div>
       )}
     </div>
