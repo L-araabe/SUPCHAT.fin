@@ -2,6 +2,7 @@ const routes = {
   dashboard: "/",
   login: "/login",
   signup: "/signup",
+  workspaces: "/workspaces",
 };
 
 const BACKEND_URL = "http://localhost:5000";

@@ -1,25 +1,32 @@
 const Message = require("../models/message.model");
 const Chat = require("../models/chat.model");
+const Channel = require("../models/channel.model");
 const { AppError, catchAsync } = require("../utils/errorHandler");
 
 // ✅ Send a message
 exports.sendMessage = catchAsync(async (req, res) => {
-  const { content, chatId } = req.body;
+  const { content, chatId, channelId } = req.body;
 
-  if (!content || !chatId) {
+  if (!content || (!chatId && !channelId)) {
     throw new AppError("Invalid data passed into request", 400);
   }
 
-  const newMessage = await Message.create({
+  const messageData = {
     sender: req.user.id,
     content,
-    chat: chatId,
-  });
+  };
 
-  // Update latest message in Chat
-  await Chat.findByIdAndUpdate(chatId, {
-    latestMessage: newMessage._id,
-  });
+  if (chatId) messageData.chat = chatId;
+  if (channelId) messageData.channel = channelId;
+
+  const newMessage = await Message.create(messageData);
+
+  if (chatId) {
+    // Update latest message in Chat
+    await Chat.findByIdAndUpdate(chatId, {
+      latestMessage: newMessage._id,
+    });
+  }
 
   const populatedMessage = await Message.findById(newMessage._id)
     .populate("sender", "name email")
@@ -46,12 +53,40 @@ exports.getChatMessages = catchAsync(async (req, res) => {
   });
 });
 
+exports.getChannelMessages = catchAsync(async (req, res) => {
+  const channelId = req.params.channelId;
+
+  const messages = await Message.find({ channel: channelId })
+    .populate("sender", "name email profilePicture")
+    .populate("channel");
+
+  res.status(200).json({
+    status: "success",
+    results: messages.length,
+    data: messages,
+  });
+});
+
 exports.unReadMessagesOfChat = catchAsync(async (req, res) => {
   const chatId = req.params.chatId;
   const userId = req.user.id;
   const messages = await Message.find({
     chat: chatId,
     seenBy: { $ne: userId }, // userId is NOT in the seenBy array
+  });
+  res.status(200).json({
+    status: "success",
+    result: messages?.length,
+    data: { unreadMessages: messages?.length },
+  });
+});
+
+exports.unReadMessagesOfChannel = catchAsync(async (req, res) => {
+  const channelId = req.params.channelId;
+  const userId = req.user.id;
+  const messages = await Message.find({
+    channel: channelId,
+    seenBy: { $ne: userId },
   });
   res.status(200).json({
     status: "success",
