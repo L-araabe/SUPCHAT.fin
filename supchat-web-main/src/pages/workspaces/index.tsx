@@ -7,6 +7,10 @@ import {
   useCreateChannelMutation,
   useLazyGetWorkspaceChannelsQuery,
 } from "../../redux/apis/channel";
+import {
+  useSendMessageMutation,
+  useLazyGetChannelMessagesQuery,
+} from "../../redux/apis/message";
 
 const WorkspacesPage = () => {
   const [workspaceName, setWorkspaceName] = useState("");
@@ -15,11 +19,16 @@ const WorkspacesPage = () => {
   const [channelName, setChannelName] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [channels, setChannels] = useState<any[]>([]);
+  const [selectedChannel, setSelectedChannel] = useState<string>("");
+  const [channelMessages, setChannelMessages] = useState<any[]>([]);
+  const [messageText, setMessageText] = useState("");
 
   const [createWorkspace] = useCreateWorkspaceMutation();
   const [fetchWorkspaces] = useLazyGetWorkspacesQuery();
   const [createChannel] = useCreateChannelMutation();
   const [fetchChannels] = useLazyGetWorkspaceChannelsQuery();
+  const [sendMessage] = useSendMessageMutation();
+  const [fetchChannelMessages] = useLazyGetChannelMessagesQuery();
 
   const loadWorkspaces = async () => {
     try {
@@ -36,6 +45,15 @@ const WorkspacesPage = () => {
       setChannels(res.data || []);
     } catch (e) {
       console.log("failed to fetch channels", e);
+    }
+  };
+
+  const loadMessages = async (channelId: string) => {
+    try {
+      const res = await fetchChannelMessages({ channelId }).unwrap();
+      setChannelMessages(res.data || []);
+    } catch (e) {
+      console.log("failed to fetch messages", e);
     }
   };
 
@@ -59,6 +77,20 @@ const WorkspacesPage = () => {
     }).unwrap();
     setChannelName("");
     loadChannels(selectedWs);
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !selectedChannel) return;
+    try {
+      const res = await sendMessage({
+        content: messageText,
+        channelId: selectedChannel,
+      }).unwrap();
+      setChannelMessages([...channelMessages, res.data]);
+      setMessageText("");
+    } catch (e) {
+      console.log("failed to send message", e);
+    }
   };
 
   return (
@@ -110,10 +142,40 @@ const WorkspacesPage = () => {
           <ul>
             {channels.map((ch) => (
               <li key={ch._id}>
-                {ch.name} {ch.isPrivate ? "(Private)" : "(Public)"}
+                <span
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setSelectedChannel(ch._id);
+                    loadMessages(ch._id);
+                  }}
+                >
+                  {ch.name}
+                </span>
+                {ch.isPrivate ? " (Private)" : " (Public)"}
               </li>
             ))}
           </ul>
+
+          {selectedChannel && (
+            <div style={{ marginTop: "1rem" }}>
+              <h4>Messages</h4>
+              <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                <ul>
+                  {channelMessages.map((msg) => (
+                    <li key={msg._id}>{msg.content}</li>
+                  ))}
+                </ul>
+              </div>
+              <div style={{ marginTop: "0.5rem" }}>
+                <input
+                  placeholder="Type a message"
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                />
+                <button onClick={handleSendMessage}>Send</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

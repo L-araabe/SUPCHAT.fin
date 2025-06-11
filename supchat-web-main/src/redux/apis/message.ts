@@ -5,6 +5,7 @@ export const messageApi = createApi({
   reducerPath: "messageAPI",
   baseQuery: baseQuery,
   endpoints: (builder) => ({
+    // original unused mutation kept for compatibility
     createMessage: builder.mutation({
       query({
         users,
@@ -24,18 +25,53 @@ export const messageApi = createApi({
         };
       },
     }),
-    getMessages: builder.query({
-      query({ chatId }: { chatId: string }) {
+    // send a message to either a chat or channel
+    sendMessage: builder.mutation<
+      { data: any },
+      { content: string; chatId?: string; channelId?: string }
+    >({
+      query({ content, chatId, channelId }) {
+        return {
+          url: "/message",
+          method: "POST",
+          body: { content, chatId, channelId },
+        };
+      },
+    }),
+    getMessages: builder.query<{ data: any[] }, { chatId: string }>({
+      query({ chatId }) {
         return {
           url: `/message/${chatId}`,
           method: "GET",
         };
       },
     }),
-    getUnreadMessages: builder.query({
-      query({ chatId }: { chatId: string }) {
+    getChannelMessages: builder.query<
+      { data: any[] },
+      { channelId: string }
+    >({
+      query({ channelId }) {
+        return {
+          url: `/message/channel/${channelId}`,
+          method: "GET",
+        };
+      },
+    }),
+    getUnreadMessages: builder.query<{ data: any }, { chatId: string }>({
+      query({ chatId }) {
         return {
           url: `/message/unread/${chatId}`,
+          method: "GET",
+        };
+      },
+    }),
+    getUnreadChannelMessages: builder.query<
+      { data: any },
+      { channelId: string }
+    >({
+      query({ channelId }) {
+        return {
+          url: `/message/unread/channel/${channelId}`,
           method: "GET",
         };
       },
@@ -54,7 +90,10 @@ export const messageApi = createApi({
 
 export const {
   useCreateMessageMutation,
+  useSendMessageMutation,
   useLazyGetMessagesQuery,
+  useLazyGetChannelMessagesQuery,
   useLazyGetUnreadMessagesQuery,
+  useLazyGetUnreadChannelMessagesQuery,
   useMarAsSeenMutation,
 } = messageApi;
