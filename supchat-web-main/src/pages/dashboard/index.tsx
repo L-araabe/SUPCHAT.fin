@@ -8,6 +8,11 @@ import {
   FaUserFriends,
 } from "react-icons/fa";
 import { FiSend } from "react-icons/fi";
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
+import { Link } from "react-router-dom";
+import { routes } from "../../constants/variables";
+
+main
 import { socket } from "../../../script/socket";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -535,6 +540,15 @@ const ChatDashboard = () => {
             >
               Create Group +
             </button>
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
+            <Link
+              to={routes.workspaces}
+              className="w-full bg-primary text-white py-2 px-3 rounded-lg text-center hover:bg-blue-600 transition text-sm font-medium"
+            >
+              Workspaces
+            </Link>
+
+main
 
             {chats.length > 0 ? (
               chats.map((chat) => {
@@ -628,6 +642,16 @@ const ChatDashboard = () => {
                 >
                   Create Group +
                 </button>
+r89dqx-codex/repenser-la-structure-des-groupes-en-workspaces
+                <Link
+                  to={routes.workspaces}
+                  onClick={() => setIsSideBarVisible(false)}
+                  className="w-full bg-primary text-white py-2 px-3 rounded-lg text-center hover:bg-blue-600 transition text-sm font-medium"
+                >
+                  Workspaces
+                </Link>
+
+main
 
                 {chats.length > 0 ? (
                   chats.map((chat) => {
