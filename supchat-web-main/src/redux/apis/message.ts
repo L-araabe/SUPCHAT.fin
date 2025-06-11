@@ -6,36 +6,26 @@ export const messageApi = createApi({
   baseQuery: baseQuery,
   endpoints: (builder) => ({
     createMessage: builder.mutation({
-      query({
-        users,
-        isGroupChat,
-        chatName,
-        groupAdmin,
-      }: {
-        users: any;
-        isGroupChat: boolean;
-        chatName: string;
-        groupAdmin: string;
-      }) {
+      query({ channelId, content }: { channelId: string; content: string }) {
         return {
           url: "/message",
           method: "POST",
-          body: { users, isGroupChat, chatName, groupAdmin },
+          body: { channelId, content },
         };
       },
     }),
     getMessages: builder.query({
-      query({ chatId }: { chatId: string }) {
+      query({ channelId }: { channelId: string }) {
         return {
-          url: `/message/${chatId}`,
+          url: `/message/${channelId}`,
           method: "GET",
         };
       },
     }),
     getUnreadMessages: builder.query({
-      query({ chatId }: { chatId: string }) {
+      query({ channelId }: { channelId: string }) {
         return {
-          url: `/message/unread/${chatId}`,
+          url: `/message/unread/${channelId}`,
           method: "GET",
         };
       },

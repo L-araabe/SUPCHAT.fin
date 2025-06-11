@@ -48,7 +48,7 @@ export default function ChatWithUser() {
             sender: sender.id,
             receiverId: userId,
             content: newMessage,
-            chat: null,
+            channel: null,
             seenBy: [sender.id],
         };
 

@@ -1,29 +1,29 @@
 const Message = require("../models/message.model");
-const Chat = require("../models/chat.model");
+const Channel = require("../models/channel.model");
 const { AppError, catchAsync } = require("../utils/errorHandler");
 
 // ✅ Send a message
 exports.sendMessage = catchAsync(async (req, res) => {
-  const { content, chatId } = req.body;
+  const { content, channelId } = req.body;
 
-  if (!content || !chatId) {
+  if (!content || !channelId) {
     throw new AppError("Invalid data passed into request", 400);
   }
 
   const newMessage = await Message.create({
     sender: req.user.id,
     content,
-    chat: chatId,
+    channel: channelId,
   });
 
-  // Update latest message in Chat
-  await Chat.findByIdAndUpdate(chatId, {
+  // Update latest message in Channel
+  await Channel.findByIdAndUpdate(channelId, {
     latestMessage: newMessage._id,
   });
 
   const populatedMessage = await Message.findById(newMessage._id)
     .populate("sender", "name email")
-    .populate("chat");
+    .populate("channel");
 
   res.status(201).json({
     status: "success",
@@ -31,13 +31,13 @@ exports.sendMessage = catchAsync(async (req, res) => {
   });
 });
 
-// ✅ Get all messages for a chat
-exports.getChatMessages = catchAsync(async (req, res) => {
-  const chatId = req.params.chatId;
+// ✅ Get all messages for a channel
+exports.getChannelMessages = catchAsync(async (req, res) => {
+  const channelId = req.params.channelId;
 
-  const messages = await Message.find({ chat: chatId })
+  const messages = await Message.find({ channel: channelId })
     .populate("sender", "name email profilePicture")
-    .populate("chat");
+    .populate("channel");
 
   res.status(200).json({
     status: "success",
@@ -46,11 +46,11 @@ exports.getChatMessages = catchAsync(async (req, res) => {
   });
 });
 
-exports.unReadMessagesOfChat = catchAsync(async (req, res) => {
-  const chatId = req.params.chatId;
+exports.unReadMessagesOfChannel = catchAsync(async (req, res) => {
+  const channelId = req.params.channelId;
   const userId = req.user.id;
   const messages = await Message.find({
-    chat: chatId,
+    channel: channelId,
     seenBy: { $ne: userId }, // userId is NOT in the seenBy array
   });
   res.status(200).json({

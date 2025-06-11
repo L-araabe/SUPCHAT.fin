@@ -61,8 +61,8 @@ io.on("connection", (socket) => {
         console.log(`✅ User ${userId} joined with socket ${socket.id}`);
     });
 
-    socket.on("message", async ({ sender, receiverId, chat, content, seenBy }) => {
-        const populatedMessage = await receiveMessage({ sender, chat, content, seenBy });
+  socket.on("message", async ({ sender, receiverId, channel, content, seenBy }) => {
+        const populatedMessage = await receiveMessage({ sender, channel, content, seenBy });
         if (Array.isArray(receiverId)) {
             receiverId.forEach((id) => {
                 io.to(id).emit("receive-message", populatedMessage);

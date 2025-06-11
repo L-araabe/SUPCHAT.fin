@@ -1,4 +1,5 @@
 const Chat = require("../models/chat.model");
+const Channel = require("../models/channel.model");
 const { AppError, catchAsync } = require("../utils/errorHandler");
 
 // ✅ Create a new chat
@@ -15,6 +16,14 @@ exports.createChat = catchAsync(async (req, res) => {
     chatName: isGroupChat ? chatName : undefined,
     groupAdmin: isGroupChat ? groupAdmin : undefined,
   });
+
+  if (isGroupChat) {
+    await Channel.create({
+      name: "general",
+      group: chats._id,
+      isPrivate: false,
+    });
+  }
 
   const chat = await Chat.findById(chats?._id)
     .populate("users", "-password")

@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
     content: { type: String, required: true },
-    chat: { type: mongoose.Schema.Types.ObjectId, ref: "chats" },
+    channel: { type: mongoose.Schema.Types.ObjectId, ref: "channels" },
     seenBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }

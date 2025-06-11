@@ -14,6 +14,7 @@ import userReducer from "./slices/user";
 import { AuthApi } from "./apis/auth";
 import { chatApi } from "./apis/chat";
 import { messageApi } from "./apis/message";
+import { channelApi } from "./apis/channel";
 
 const persistConfig = {
   key: "root",
@@ -25,6 +26,7 @@ const persistConfig = {
     AuthApi.reducerPath,
     chatApi.reducerPath,
     messageApi.reducerPath,
+    channelApi.reducerPath,
   ],
 };
 
@@ -33,6 +35,7 @@ const rootReducer = combineReducers({
   [AuthApi.reducerPath]: AuthApi.reducer,
   [chatApi.reducerPath]: chatApi.reducer,
   [messageApi.reducerPath]: messageApi.reducer,
+  [channelApi.reducerPath]: channelApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -44,5 +47,10 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(AuthApi.middleware, chatApi.middleware, messageApi.middleware),
+    }).concat(
+      AuthApi.middleware,
+      chatApi.middleware,
+      messageApi.middleware,
+      channelApi.middleware
+    ),
 });
